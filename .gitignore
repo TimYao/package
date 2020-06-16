@@ -1,0 +1,6 @@
+node_module
+.DS_Store
+.nvmrc
+index2.html
+test.js
+tempCodeRunnerFile.js

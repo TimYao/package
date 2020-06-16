@@ -1,0 +1,24 @@
+{
+  "name": "htp-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "htp-server": "bin/www",
+    "hts": "bin/www"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "DEBUG=dev:* node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^4.0.0",
+    "commander": "^5.0.0",
+    "debug": "^4.1.1",
+    "ejs": "^3.0.2",
+    "mime": "^2.4.4"
+  }
+}
