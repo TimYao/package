@@ -8,7 +8,7 @@ const config = getConfig();
 const {getKey} = require('./utils');
 
 
-console.log('config:', config);
+// console.log('config:', config);
 
 const setHeader = exports.setHeader = (res, headers) => {
   headers.forEach(head => {
