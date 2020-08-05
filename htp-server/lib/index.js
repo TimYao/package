@@ -1,68 +1,53 @@
-/*
-  静态查询目录
-*/
 'use strict'
 
 const path = require('path');
 const fs = require('fs');
-const url = require('url');
-const mime = require('mime');
-const ejs = require('ejs');
 const debugDev = require('debug')('dev:libIndex');
-const {getConfig} = require('../config/config');
-let config;
+const {pipe} = require('../lib/feature');
+const {updateTemplate, recordComparison, defaultTemplate, renderOptions} = require('./utils');
+const validateHash = recordComparison('dirs');
 
 
-const renderOptions = function(renderData){
-  if (!config) {
-    config = getConfig();
-  }
-  return Object.assign({}, renderData, {options: config})
-}
-
-const readDir = function(req, res, rootDir, pathname){
-  let dirs;
-  const dir = path.join(rootDir, pathname);
+const readDir = function(res, dir, pathname){
   try {
     const file = path.join(dir, 'index.html');
-    if (fs.statSync(file).isFile()) {
-      const extname = path.extname(dir).substring(1);
-      res.setHeader('Content-Type', mime.getType(extname) + ';charset=utf8');
-      return fs.createReadStream(dir).pipe(res);
+    const fd = fs.statSync(file);
+    if (fd.isFile()) {
+      req.stat = fd;
+      pipe(req, res, dir);
+      return;
     }
   } catch(e) {
-    // debugDev(e);
-    dirs = fs.readdirSync(dir);
+    debugDev(e);
+    let dirs = fs.readdirSync(dir);
     if (dirs.length > 0) {
-      const tpl = fs.readFileSync(path.join(__dirname, '../template', 'index.html'), 'utf-8');
-      dirs = dirs.reduce((arr, next, i) => {
-        const ref = (pathname === '\/' ? '' : pathname) + '/' + next;
-        arr[i] = {'filename': next, 'link': ref}
-        return arr;
-      },[]);
-      let renderData = {data: dirs};
-      renderData = renderOptions(renderData);
-      res.end(ejs.render(tpl, renderData));
+      const tpl = fs.readFileSync(defaultTemplate, 'utf-8');
+      let renderData = renderOptions({dirs, pathname});
+      const isChange = validateHash(JSON.stringify(renderData));
+      const file = updateTemplate(isChange, tpl, renderData);
+      fs.createReadStream(file).pipe(res);
     } else {
       res.end('This dir is no file!')
     }
   }
-}
+};
+
 const staticDir = function(req, res, rootDir, pathname){
   try{
     const dir = path.join(rootDir, pathname);
     const fd = fs.statSync(dir);
     if (fd.isFile()) {
-      const extname = path.extname(dir).substring(1);
-      res.setHeader('Content-Type', mime.getType(extname) + ';charset=utf8');
-      return fs.createReadStream(dir).pipe(res);
+      req.stat = fd;
+      pipe(req, res, dir);
+      return;
     } else {
-      readDir(req, res, rootDir, pathname);
+      readDir(res, dir, pathname);
     }
   }catch(e){
     debugDev(e);
+    console.log(e);
     res.end('not found 404');
   }
-}
+};
 
 exports.staticDir = staticDir

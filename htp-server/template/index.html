@@ -17,7 +17,7 @@
 <body>
   <ul class="dir-list">
     <% data.forEach(function(item, n){ %>
-      <li><span class="file-num"><%= (options && options.index ? n+1 : '') %></span><a href="<%= item.link %>"><%= item.filename %></a></li>
+      <li><span class="file-num"><%= (options && options.index ? n+1+'.' : '') %></span><a href="<%= item.link %>"><%= item.filename %></a></li>
     <% }) %>
   </ul>
 </body>

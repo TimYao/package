@@ -1,23 +1,29 @@
-let excludeKey = ['pkgName', 'address', 'port'];
-let config = {};
+const defaults = require('./default');
+// let excludeKey = ['pkgName', 'address', 'port'];
+let config;
 
 const handlerConfig = (reqConfig) => {
   const options = {};
   for(let key in reqConfig){
-    if(!excludeKey.includes(key)){
-      options[key] = reqConfig[key];
+    if (reqConfig[key] === 'true') {
+      reqConfig[key] = true;
     }
+    if (reqConfig[key] === 'false') {
+      reqConfig[key] = false;
+    }
+    options[key] = reqConfig[key];
   }
   return options;
 }
 
 const mergeOptions = (reqConfig) => {
   const options = handlerConfig(reqConfig);
-  config = Object.assign({}, config, options);
+  config = Object.assign({}, options);
 }
 const getConfig = () => {
-  return config;
+  return config || defaults;
 }
+
 
 module.exports = {
   mergeOptions,

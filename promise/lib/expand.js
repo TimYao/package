@@ -50,6 +50,9 @@ Promise.all = function (promises) {
   })
 }
 Promise.race = function (promises) {
+  if (!util.isArray(promises)) {
+    throw '参数格式为数组，请传入正确的格式！';
+  }
   return new Promise((resolve, reject) => {
     promises.forEach((promise) => {
       if (util.isPromise(promise)) {

@@ -1,7 +1,7 @@
 {
   "name": "htp-server",
   "version": "1.0.0",
-  "description": "",
+  "description": "this is personal http-server pack",
   "main": "index.js",
   "bin": {
     "htp-server": "bin/www",
@@ -9,16 +9,39 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "DEBUG=dev:* node index.js"
+    "dev": "DEBUG=dev:* node index.js",
+    "publish": "npm version && npm publish"
   },
-  "keywords": [],
-  "author": "",
+  "engines": {
+    "node": ">=8.9.0"
+  },
+  "keywords": [
+    "node",
+    "ejs",
+    "debug",
+    "mime",
+    "chalk"
+  ],
+  "files": [
+    "bin",
+    "template",
+    "lib",
+    "config"
+  ],
+  "author": "TimLie",
+  "email": "tmwoman@yeah.net",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:TimYao/package.git"
+  },
+  "homepage": "https://github.com/TimYao/package/tree/master/htp-server#readme",
   "license": "ISC",
   "dependencies": {
     "chalk": "^4.0.0",
     "commander": "^5.0.0",
     "debug": "^4.1.1",
     "ejs": "^3.0.2",
+    "ejs-stream2": "^1.0.2",
     "mime": "^2.4.4"
   }
 }
