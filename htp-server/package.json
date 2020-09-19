@@ -1,8 +1,9 @@
 {
   "name": "htp-server",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "this is personal http-server pack",
   "main": "index.js",
+  "private": true,
   "bin": {
     "htp-server": "bin/www",
     "hts": "bin/www"

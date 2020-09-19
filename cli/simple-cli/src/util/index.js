@@ -29,5 +29,3 @@ export {
   checkCommander,
   error
 }
-
-console.log(typeof {});

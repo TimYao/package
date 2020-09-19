@@ -44,15 +44,15 @@ class DeleteDir {
       try {
         const stat = fs.statSync(dir);
         if(stat.isDirectory()) {
-        const dirs = fs.readdirSync(dir);
-        dirs.forEach((d) => {
-          del(path.join(dir, d));
-        })
-        fs.rmdirSync(dir);
-        cb && cb();
+          const dirs = fs.readdirSync(dir);
+          dirs.forEach((d) => {
+            del(path.join(dir, d));
+          })
+          fs.rmdirSync(dir);
+          cb && cb();
         } else {
-        fs.unlinkSync(dir);
-        cb && cb();
+          fs.unlinkSync(dir);
+          cb && cb();
         }
       }catch(e) {
         cb && cb(e);

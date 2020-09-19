@@ -14,4 +14,5 @@ const token = tokenizer(code);
 const ast = parse(token);
 const traverseAst = traverse(ast);
 const generatorNode = generator(traverseAst);
+// console.log(JSON.stringify(traverseAst, null, 2));
 console.log('last result:', generatorNode);

@@ -55,3 +55,8 @@ Object.keys(commandMap).forEach((command) => {
 program.version(VERSION, '-v --version').parse(process.argv);
 
 
+
+// const _glob = require('glob');
+// const files = _glob.sync('src/');
+console.log('-----', program);
+

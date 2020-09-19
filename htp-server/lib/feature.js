@@ -7,6 +7,7 @@ const {getConfig} = require('../config/config');
 const config = getConfig();
 const {getKey} = require('./utils');
 
+const fileReg = /(\.js|\.css|\.jpe?g|\.gif|\.png|\.woff|\.txt|\.woff2)/;
 
 // console.log('config:', config);
 
@@ -47,7 +48,6 @@ const setCache = exports.setCache = (req, time) => {
   const {pathname} = url.parse(req.url);
   const ext = path.extname(pathname);
   const stat = req.stat;
-  const fileReg = /(\.js|\.css|\.jpe?g|\.gif|\.png|\.woff|\.txt|\.woff2)/;
   let cacheInfo = {};
   let cacheControl;
   time = Number(time);
@@ -85,27 +85,47 @@ const matchCache = (req, headers) => {
 
 // write file
 const pipe = exports.pipe = (req, res, content) => {
+  const method = req.method.toLowerCase();
+  if (method !== 'get') return;
   const extname = path.extname(content).substring(1);
   const headers = [];
-  extname && (headers.push({'Content-Type': mime.getType(extname) + ';charset=utf8'}))
+  // extname && (headers.push({'Content-Type': mime.getType(extname) + ';charset=utf8'}))
   let gzip = config.gzip;
   gzip && (gzip = setGzip(req), gzip && headers.push(gzip.header))
   let cache = 'cache' in config;
   cache && (cache = setCache(req, config.cache), cache && headers.push(...cache.headers))
-  setHeader(res, headers);
-  const cacheInfo = cache && matchCache(req, cache.headers);
+  // setHeader(res, headers);
+  // const cacheInfo = cache && matchCache(req, cache.headers);
   // console.log(cacheInfo);
-  if (cacheInfo) {
+  res.setHeader('Content-type', extname + '; charset=utf-8');
+  res.setHeader('Expires', new Date(Date.now()+20000).toGMTString());
+  res.setHeader('Cache-Control', 'max-age=20');
+  res.setHeader('Last-Modified', req.stat.ctime.toGMTString());
+  const etag = crypto.createHash('md5').update(String(req.stat.size)).digest('base64');
+  res.setHeader('Etag', etag);
+  // const getETag = getKey(headers);
+  // const clientETag = getETag('Etag')[0]['Etag'];
+  const ifLastModifiedSince = req.headers['if-modified-since'];
+  const ifNoneMatch = req.headers['if-none-match'];
+  if (ifNoneMatch === etag || ifLastModifiedSince === req.stat.ctime.toGMTString()) {
     res.statusCode = 304;
-    return res.end();
-  } else {
-    res.statusCode = 200;
-  }
-  if (gzip.zlib) {
-    fs.createReadStream(content).pipe(gzip.zlib()).pipe(res);
+    res.end();
   } else {
     fs.createReadStream(content).pipe(res);
   }
+
+  // if (cacheInfo) {
+  //   res.statusCode = 304;
+  //   return res.end();
+  // } else {
+  //   res.statusCode = 200;
+  // }
+
+  // if (gzip.zlib) {
+  //   fs.createReadStream(content).pipe(gzip.zlib()).pipe(res);
+  // } else {
+  //   fs.createReadStream(content).pipe(res);
+  // }
 }
 
 exports.feature = () => {
